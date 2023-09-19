@@ -299,7 +299,7 @@ project.ext {
             // Automattic Tracks
             automatticTracks: "com.automattic:Automattic-Tracks-Android:$versionTracks",
             // Sentry
-            sentryBom: 'io.sentry:sentry-bom:6.28.0',
+            sentryBom: 'io.sentry:sentry-bom:6.28.0-session-replay-2',
             sentryAndroidCore: 'io.sentry:sentry-android-core',
             sentryFragment: 'io.sentry:sentry-android-fragment',
             sentryTimber: 'io.sentry:sentry-android-timber',

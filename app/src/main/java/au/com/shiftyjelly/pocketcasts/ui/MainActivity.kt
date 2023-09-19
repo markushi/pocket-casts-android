@@ -132,6 +132,8 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import io.sentry.Sentry
+import io.sentry.android.core.replay.WindowRecorder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -218,6 +220,8 @@ class MainActivity :
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navigator: BottomNavigator
+
+    private val windowRecorder: WindowRecorder = WindowRecorder()
 
     private val onboardingLauncher: ActivityResultLauncher<Intent> = registerForActivityResult(OnboardingActivityContract()) { result ->
         when (result) {
@@ -411,6 +415,8 @@ class MainActivity :
 
         // Tell media router to discover routes
         mediaRouter?.addCallback(mediaRouteSelector, mediaRouterCallback, MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY)
+
+        windowRecorder.startRecording(this)
     }
 
     override fun onStop() {
@@ -419,6 +425,9 @@ class MainActivity :
         // addCallback() again in order to tell the media router that it no longer
         // needs to invest effort trying to discover routes of these kinds for now.
         mediaRouter?.addCallback(mediaRouteSelector, mediaRouterCallback, 0)
+
+        val (replayEvent, hint) = windowRecorder.stopRecording()
+        Sentry.captureReplay(replayEvent, hint)
     }
 
     private fun openFullscreenViewPlayer() {
